@@ -1,0 +1,1490 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gabia Cloud — Inference Package 6종</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════
+   DESIGN TOKENS — 가비아 공식 라이트 테마
+═══════════════════════════════════════════ */
+:root {
+  --blue:        #1a6dff;
+  --blue-dark:   #0d52cc;
+  --blue-light:  #eef4ff;
+  --blue-mid:    #d5e6ff;
+  --navy:        #0b1e3d;
+  --red:         #e03438;
+  --green:       #00b574;
+  --amber:       #f59e0b;
+
+  --bg:          #f4f6f9;
+  --bg-white:    #ffffff;
+  --bg-light:    #f8fafc;
+
+  --border:      #e2e8f0;
+  --border-dark: #c8d3e0;
+
+  --text-primary:   #1a2438;
+  --text-secondary: #4a5878;
+  --text-muted:     #8899bb;
+  --text-accent:    #1a6dff;
+
+  --mono:  'DM Mono', 'Courier New', monospace;
+  --sans:  'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
+
+  --r: 6px;
+  --r-lg: 10px;
+
+  --shadow-xs: 0 1px 3px rgba(0,0,0,.06);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,.08);
+  --shadow-md: 0 4px 20px rgba(0,0,0,.10);
+  --shadow-blue: 0 0 0 2px rgba(26,109,255,.25);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin:0; padding:0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--sans);
+  font-size: 13.5px;
+  color: var(--text-primary);
+  background: var(--bg);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ═══════════════════════════════════════════
+   TOPBAR
+═══════════════════════════════════════════ */
+.topbar {
+  background: var(--navy);
+  height: 32px;
+  display: flex; align-items: center;
+}
+.topbar-inner {
+  max-width: 1360px; margin: 0 auto; padding: 0 24px; width: 100%;
+  display: flex; justify-content: flex-end; align-items: center; gap: 16px;
+}
+.topbar-inner a {
+  font-size: 12px; color: #9aaccc; text-decoration: none;
+  transition: color .15s;
+}
+.topbar-inner a:hover { color: #fff; }
+.topbar-sep { color: #3a4e6e; }
+.topbar-phone {
+  font-size: 12px; color: #9aaccc;
+  display: flex; align-items: center; gap: 5px;
+}
+
+/* ═══════════════════════════════════════════
+   HEADER
+═══════════════════════════════════════════ */
+header {
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  height: 60px;
+  display: flex; align-items: center;
+  position: sticky; top: 0; z-index: 200;
+  box-shadow: var(--shadow-xs);
+}
+.header-inner {
+  max-width: 1360px; margin: 0 auto; padding: 0 24px; width: 100%;
+  display: flex; align-items: center; justify-content: space-between; gap: 28px;
+}
+.logo {
+  font-size: 20px; font-weight: 700;
+  color: var(--text-primary); letter-spacing: -.3px;
+  display: flex; align-items: baseline; gap: 2px;
+  text-decoration: none; flex-shrink: 0;
+}
+.logo-g { color: var(--blue); }
+.logo-sub {
+  font-size: 13px; font-weight: 400; color: var(--text-muted); margin-left: 2px;
+}
+.gnb {
+  display: flex; gap: 2px; flex: 1; justify-content: center;
+}
+.gnb a {
+  font-size: 13.5px; font-weight: 500; color: var(--text-secondary);
+  text-decoration: none; padding: 6px 14px; border-radius: var(--r);
+  transition: all .15s; white-space: nowrap;
+}
+.gnb a:hover { color: var(--text-primary); background: var(--bg-light); }
+.gnb a.active { color: var(--blue); font-weight: 600; }
+.header-btns { display: flex; gap: 8px; flex-shrink: 0; }
+.btn-consult {
+  background: var(--blue); color: #fff; border: none;
+  padding: 8px 20px; border-radius: var(--r);
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  font-family: var(--sans); transition: background .15s;
+}
+.btn-consult:hover { background: var(--blue-dark); }
+.btn-console {
+  background: transparent; color: var(--text-secondary);
+  border: 1px solid var(--border-dark); padding: 7px 14px;
+  border-radius: var(--r); font-size: 13px; font-weight: 500;
+  cursor: pointer; font-family: var(--sans); transition: all .15s;
+}
+.btn-console:hover { border-color: var(--blue); color: var(--blue); }
+
+/* ═══════════════════════════════════════════
+   SUBNAV
+═══════════════════════════════════════════ */
+.subnav {
+  background: #fff;
+  border-bottom: 2px solid var(--border);
+}
+.subnav-inner {
+  max-width: 1360px; margin: 0 auto; padding: 0 24px;
+  display: flex; align-items: center;
+}
+.subnav a {
+  font-size: 13.5px; color: var(--text-secondary); text-decoration: none;
+  padding: 11px 18px; border-bottom: 2px solid transparent; margin-bottom: -2px;
+  transition: all .15s; display: flex; align-items: center; gap: 6px;
+  white-space: nowrap;
+}
+.subnav a:hover { color: var(--blue); }
+.subnav a.active { color: var(--blue); border-bottom-color: var(--blue); font-weight: 600; }
+.new-tag {
+  font-size: 9.5px; font-weight: 700; background: var(--red);
+  color: #fff; padding: 1.5px 5px; border-radius: 3px;
+  letter-spacing: .3px; text-transform: uppercase;
+}
+
+/* ═══════════════════════════════════════════
+   HERO BANNER — 가비아 스타일 파란 배너
+═══════════════════════════════════════════ */
+.hero {
+  background: linear-gradient(135deg, #0b2460 0%, #1444a8 40%, #1a6dff 100%);
+  position: relative; overflow: hidden;
+  padding: 44px 24px 40px;
+}
+/* 오른쪽 3D 큐브 느낌의 기하학 장식 */
+.hero-deco {
+  position: absolute; right: 0; top: 0; bottom: 0; width: 480px;
+  background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,.05) 50%, transparent 100%);
+  pointer-events: none;
+}
+.hero-deco-inner {
+  position: absolute; right: 80px; top: 50%; transform: translateY(-50%);
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 10px;
+  opacity: .25;
+}
+.hero-cube {
+  width: 70px; height: 70px;
+  background: linear-gradient(135deg, rgba(255,255,255,.3), rgba(255,255,255,.1));
+  border: 1px solid rgba(255,255,255,.2); border-radius: 6px;
+  transform: rotate(-15deg) skewX(-10deg);
+}
+.hero-cube:nth-child(2) { transform: rotate(-15deg) skewX(-10deg) translateY(10px); }
+.hero-cube:nth-child(4) { transform: rotate(-15deg) skewX(-10deg) translateY(-8px); }
+.hero-cube:nth-child(5) { transform: rotate(-15deg) skewX(-10deg) translateY(6px) scale(.85); }
+
+.hero-inner {
+  max-width: 1360px; margin: 0 auto; position: relative; z-index: 1;
+}
+.hero-update-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.25);
+  color: #fff; font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .8px; padding: 3px 10px; border-radius: 3px; margin-bottom: 14px;
+}
+.hero h1 {
+  font-size: 30px; font-weight: 700; color: #fff;
+  line-height: 1.3; margin-bottom: 8px; letter-spacing: -.3px;
+}
+.hero-sub {
+  font-size: 14px; color: rgba(255,255,255,.78); line-height: 1.7;
+  max-width: 480px; margin-bottom: 22px;
+}
+.btn-hero {
+  background: #fff; color: var(--blue); border: none;
+  padding: 11px 28px; border-radius: var(--r);
+  font-size: 13.5px; font-weight: 700; cursor: pointer;
+  font-family: var(--sans); transition: all .15s;
+  display: inline-block;
+}
+.btn-hero:hover { background: var(--blue-light); transform: translateY(-1px); }
+
+/* stats row in hero bottom-right */
+.hero-stats {
+  position: absolute; right: 24px; bottom: 0; top: 0;
+  display: flex; flex-direction: column; justify-content: center;
+  gap: 8px; z-index: 2;
+}
+.hero-stat {
+  background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.18);
+  border-radius: var(--r); padding: 11px 18px;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+}
+.hero-stat-num {
+  font-family: var(--mono); font-size: 18px; font-weight: 500;
+  color: #fff; letter-spacing: -.5px;
+}
+.hero-stat-label {
+  font-size: 11px; color: rgba(255,255,255,.6); margin-top: 2px;
+}
+
+/* ═══════════════════════════════════════════
+   PAGE TABS
+═══════════════════════════════════════════ */
+.pagetabs {
+  background: #fff; border-bottom: 1px solid var(--border);
+}
+.pagetabs-inner {
+  max-width: 1360px; margin: 0 auto; padding: 0 24px; display: flex;
+}
+.pagetabs a {
+  font-size: 13.5px; color: var(--text-secondary); text-decoration: none;
+  padding: 12px 20px; border-bottom: 3px solid transparent;
+  transition: all .15s;
+}
+.pagetabs a:hover { color: var(--blue); }
+.pagetabs a.active { color: var(--blue); border-bottom-color: var(--blue); font-weight: 600; }
+
+/* ═══════════════════════════════════════════
+   BODY
+═══════════════════════════════════════════ */
+.body-wrap { max-width: 1360px; margin: 0 auto; padding: 36px 24px 80px; }
+
+/* section head */
+.sec-head { margin-bottom: 24px; }
+.sec-title {
+  font-size: 19px; font-weight: 700; color: var(--text-primary);
+  margin-bottom: 4px;
+}
+.sec-sub {
+  font-size: 12px; color: var(--text-muted);
+  font-family: var(--mono);
+}
+
+/* ═══════════════════════════════════════════
+   CONTROL BAR
+═══════════════════════════════════════════ */
+.ctrl-row {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px; margin-bottom: 20px;
+}
+.cat-tabs {
+  display: flex; gap: 0;
+  border-bottom: 2px solid var(--border);
+}
+.cat-tab {
+  background: transparent; border: none; padding: 8px 20px;
+  font-size: 13.5px; font-weight: 500; color: var(--text-secondary);
+  cursor: pointer; font-family: var(--sans);
+  border-bottom: 2px solid transparent; margin-bottom: -2px;
+  transition: all .15s; white-space: nowrap;
+}
+.cat-tab:hover { color: var(--blue); }
+.cat-tab.active { color: var(--blue); border-bottom-color: var(--blue); font-weight: 600; }
+
+.unit-row {
+  display: flex; align-items: center; gap: 10px;
+}
+.unit-label {
+  font-size: 12px; color: var(--text-muted); font-family: var(--mono);
+}
+.unit-tabs {
+  display: flex; border: 1px solid var(--border); border-radius: var(--r);
+  overflow: hidden; background: #fff;
+}
+.unit-tab {
+  background: transparent; border: none; padding: 6px 14px;
+  font-family: var(--mono); font-size: 12px; color: var(--text-secondary);
+  cursor: pointer; border-right: 1px solid var(--border); transition: all .12s;
+}
+.unit-tab:last-child { border-right: none; }
+.unit-tab:hover { color: var(--blue); background: var(--blue-light); }
+.unit-tab.active { background: var(--navy); color: #fff; font-weight: 500; }
+
+/* ═══════════════════════════════════════════
+   PACKAGE GRID
+═══════════════════════════════════════════ */
+.pkg-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+/* ═══════════════════════════════════════════
+   PACKAGE CARD
+═══════════════════════════════════════════ */
+.pkg-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  display: flex; flex-direction: column;
+  box-shadow: var(--shadow-xs);
+  transition: box-shadow .2s, transform .2s, border-color .2s;
+  overflow: hidden;
+}
+.pkg-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+  border-color: #c0d0ee;
+}
+.pkg-card.featured {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 1px var(--blue), var(--shadow-sm);
+}
+.pkg-card.featured:hover {
+  box-shadow: 0 0 0 2px var(--blue), var(--shadow-md);
+}
+
+/* featured stripe */
+.pkg-card.featured .card-hd {
+  border-top: 3px solid var(--blue);
+}
+
+/* ── CARD HEADER ── */
+.card-hd {
+  padding: 16px 18px 13px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-light);
+}
+.card-badges {
+  display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 9px; min-height: 20px;
+}
+.badge {
+  font-size: 10px; font-weight: 700; padding: 2px 7px;
+  border-radius: 3px; letter-spacing: .3px;
+}
+.badge-best     { background: var(--blue); color: #fff; }
+.badge-new      { background: var(--red);  color: #fff; }
+.badge-internal { background: #eef1f7; color: var(--text-secondary); border: 1px solid var(--border-dark); }
+.badge-external { background: #e6faf3; color: #008f5c; border: 1px solid #aae8cd; }
+.badge-credit   { background: #fffbea; color: #b45309; border: 1px solid #fde68a; }
+
+.card-title {
+  font-size: 18px; font-weight: 700;
+  color: var(--text-primary); margin-bottom: 3px;
+}
+.card-sub {
+  font-size: 12px; color: var(--blue); font-weight: 500;
+}
+
+/* ── SPEC TABLE ── */
+.spec-wrap {
+  padding: 13px 18px;
+  border-bottom: 1px solid var(--border);
+}
+.spec-tbl { width: 100%; border-collapse: collapse; }
+.spec-tbl td {
+  padding: 4px 0; font-size: 12.5px; vertical-align: top;
+  border-bottom: 1px solid #f1f5f9;
+}
+.spec-tbl tr:last-child td { border-bottom: none; }
+.spec-tbl td:first-child {
+  font-family: var(--mono); font-size: 10.5px; font-weight: 500;
+  color: var(--text-muted); text-transform: uppercase; letter-spacing: .4px;
+  width: 58px; padding-top: 5px;
+}
+.spec-tbl td:last-child { color: var(--text-secondary); font-weight: 400; }
+.s-blue  { color: var(--blue) !important; font-weight: 600 !important; }
+.s-green { color: var(--green) !important; font-weight: 600 !important; }
+.s-mono  { font-family: var(--mono) !important; font-size: 12px !important; }
+
+/* ── OPTIONS ── */
+.opt-wrap {
+  padding: 13px 18px;
+  border-bottom: 1px solid var(--border);
+  flex: 1; display: flex; flex-direction: column; gap: 11px;
+}
+.opt-group {}
+.opt-lbl {
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: .5px; color: var(--text-muted);
+  margin-bottom: 6px; font-family: var(--mono);
+}
+.opt-btns { display: flex; flex-wrap: wrap; gap: 5px; }
+.opt-btn {
+  background: var(--bg-light); border: 1px solid var(--border);
+  color: var(--text-secondary); font-size: 11.5px; font-weight: 400;
+  padding: 5px 10px; border-radius: var(--r); cursor: pointer;
+  transition: all .12s; white-space: nowrap; font-family: var(--sans);
+  user-select: none;
+}
+.opt-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
+.opt-btn.selected { border-color: var(--blue); color: var(--blue); background: var(--blue-light); font-weight: 600; }
+.opt-btn.excluded { text-decoration: line-through; color: var(--text-muted); opacity: .5; }
+.star::after { content: ' ★'; color: var(--amber); font-size: 9px; }
+
+/* ── PRICE ── */
+.price-wrap {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+}
+.price-unit-tabs {
+  display: flex; border: 1px solid var(--border); border-radius: var(--r);
+  overflow: hidden; width: fit-content; margin-bottom: 12px; background: #fff;
+}
+.p-utab {
+  background: transparent; border: none; padding: 5px 12px;
+  font-family: var(--mono); font-size: 11px; color: var(--text-muted);
+  cursor: pointer; border-right: 1px solid var(--border); transition: all .12s;
+}
+.p-utab:last-child { border-right: none; }
+.p-utab:hover { color: var(--blue); background: var(--blue-light); }
+.p-utab.active { background: var(--navy); color: #fff; }
+
+.price-main { display: flex; align-items: baseline; gap: 3px; margin-bottom: 5px; }
+.price-num {
+  font-family: var(--mono); font-size: 30px; font-weight: 500;
+  color: var(--text-primary); letter-spacing: -1px;
+  transition: all .15s;
+}
+.price-unit { font-size: 13px; color: var(--text-muted); }
+.price-breakdown { font-family: var(--mono); font-size: 11px; color: var(--text-muted); min-height: 16px; margin-bottom: 2px; }
+.price-orig { font-family: var(--mono); font-size: 11px; color: var(--text-muted); text-decoration: line-through; min-height: 15px; margin-bottom: 1px; }
+.price-disc { font-size: 11px; color: var(--red); font-weight: 600; min-height: 15px; margin-bottom: 6px; font-family: var(--mono); }
+.traffic-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--blue-light); border: 1px solid var(--blue-mid);
+  color: var(--blue); font-size: 11px; font-weight: 600;
+  padding: 3px 9px; border-radius: 20px;
+}
+.traffic-pill svg { width: 11px; height: 11px; }
+
+/* ── APPLY BUTTON ── */
+.btn-apply {
+  display: block; width: 100%; background: var(--blue); color: #fff;
+  border: none; padding: 14px; font-size: 14px; font-weight: 700;
+  cursor: pointer; font-family: var(--sans); transition: background .15s;
+  letter-spacing: .1px; flex-shrink: 0;
+}
+.btn-apply:hover { background: var(--blue-dark); }
+.pkg-card.featured .btn-apply {
+  background: var(--blue);
+}
+
+/* ═══════════════════════════════════════════
+   DIVIDER
+═══════════════════════════════════════════ */
+.sec-div { height: 1px; background: var(--border); margin: 48px 0 40px; }
+
+/* ═══════════════════════════════════════════
+   GPU SPEC TABLE (technical)
+═══════════════════════════════════════════ */
+.gpu-spec-wrap {
+  border: 1px solid var(--border); border-radius: var(--r-lg);
+  overflow: hidden; background: #fff; box-shadow: var(--shadow-xs);
+}
+table.gpu-spec-tbl { width: 100%; border-collapse: collapse; }
+table.gpu-spec-tbl thead tr { background: var(--navy); }
+table.gpu-spec-tbl th {
+  padding: 10px 14px; text-align: left;
+  font-family: var(--mono); font-size: 10.5px; font-weight: 500;
+  color: #9aaccc; text-transform: uppercase; letter-spacing: .6px;
+  white-space: nowrap;
+}
+table.gpu-spec-tbl td {
+  padding: 10px 14px; border-bottom: 1px solid var(--border);
+  font-size: 12.5px; vertical-align: middle; white-space: nowrap;
+}
+table.gpu-spec-tbl tr:last-child td { border-bottom: none; }
+table.gpu-spec-tbl tr:hover td { background: var(--bg-light); }
+table.gpu-spec-tbl td:first-child { font-weight: 700; color: var(--blue); font-size: 13px; }
+.gs-mono  { font-family: var(--mono); font-size: 12px; color: var(--text-secondary); }
+.gs-ok    { color: var(--green); font-weight: 700; font-family: var(--mono); }
+.gs-warn  { color: var(--amber); font-weight: 700; font-family: var(--mono); }
+.gs-bad   { color: var(--red);   font-weight: 700; font-family: var(--mono); }
+.gs-arch  { font-size: 11px; background: var(--bg-light); color: var(--text-muted); padding: 2px 6px; border-radius: 3px; font-family: var(--mono); border: 1px solid var(--border); }
+
+/* ═══════════════════════════════════════════
+   COMPARE TABLE
+═══════════════════════════════════════════ */
+.cmp-wrap {
+  border: 1px solid var(--border); border-radius: var(--r-lg);
+  overflow: hidden; background: #fff; box-shadow: var(--shadow-xs);
+}
+table.cmp-tbl { width: 100%; border-collapse: collapse; }
+table.cmp-tbl thead tr { background: var(--bg-light); border-bottom: 2px solid var(--border); }
+table.cmp-tbl th {
+  padding: 11px 14px; text-align: left;
+  font-family: var(--mono); font-size: 10.5px; font-weight: 600;
+  color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px;
+  white-space: nowrap;
+}
+table.cmp-tbl td {
+  padding: 11px 14px; border-bottom: 1px solid var(--border);
+  font-size: 13px; vertical-align: middle;
+}
+table.cmp-tbl tr:last-child td { border-bottom: none; }
+table.cmp-tbl tr:hover td { background: var(--bg-light); }
+table.cmp-tbl td:first-child { font-weight: 700; color: var(--blue); }
+.cm  { font-family: var(--mono); font-size: 12px; color: var(--text-secondary); }
+.ch  { font-family: var(--mono); font-size: 12.5px; color: var(--text-primary); font-weight: 600; }
+.ct-int { background: #eef1f7; color: var(--text-secondary); font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 3px; }
+.ct-ext { background: #e6faf3; color: #008f5c; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 3px; }
+.ct-both { background: var(--blue-light); color: var(--blue); font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 3px; }
+.c-credit { background: #fffbea; color: #b45309; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 3px; }
+
+/* ═══════════════════════════════════════════
+   FOOTNOTES
+═══════════════════════════════════════════ */
+.footnotes { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 14px; }
+.fn { font-family: var(--mono); font-size: 10.5px; color: var(--text-muted); display: flex; align-items: flex-start; gap: 4px; }
+.fn::before { content: '※'; flex-shrink: 0; }
+
+/* ═══════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════ */
+footer {
+  background: var(--navy); color: #9aaccc;
+  padding: 22px 24px; font-size: 12px;
+}
+.footer-inner {
+  max-width: 1360px; margin: 0 auto;
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 16px; flex-wrap: wrap;
+}
+.footer-inner a { color: #6a82aa; text-decoration: none; margin-right: 14px; }
+.footer-inner a:hover { color: #fff; }
+
+/* ═══════════════════════════════════════════
+   ENTER ANIMATIONS
+═══════════════════════════════════════════ */
+@keyframes cardIn {
+  from { opacity:0; transform:translateY(14px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.pkg-card { animation: cardIn .3s ease both; }
+.pkg-card:nth-child(1) { animation-delay:.04s; }
+.pkg-card:nth-child(2) { animation-delay:.08s; }
+.pkg-card:nth-child(3) { animation-delay:.12s; }
+.pkg-card:nth-child(4) { animation-delay:.16s; }
+.pkg-card:nth-child(5) { animation-delay:.20s; }
+.pkg-card:nth-child(6) { animation-delay:.24s; }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="#">로그인</a><span class="topbar-sep">|</span>
+    <a href="#">My 가비아</a><span class="topbar-sep">|</span>
+    <a href="#">가비아사이트</a>
+    <div class="topbar-phone">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13.6 19.79 19.79 0 0 1 1.6 4.97 2 2 0 0 1 3.59 2.77h3a2 2 0 0 1 2 1.72c.127.96.36 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 10.4a16 16 0 0 0 6 6l.91-1.91a2 2 0 0 1 2.11-.45c.907.34 1.85.573 2.81.7A2 2 0 0 1 21.73 17z"/></svg>
+      02-3473-3911
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <a class="logo" href="#"><span class="logo-g">Gabia</span> Cloud<span class="logo-sub"></span></a>
+    <nav class="gnb">
+      <a href="#">클라우드</a>
+      <a href="#">공공기관 전용 클라우드</a>
+      <a href="#">AWS</a>
+      <a href="#" class="active">IDC</a>
+      <a href="#">보안</a>
+      <a href="#">매니지드 서비스</a>
+      <a href="#">고객지원</a>
+    </nav>
+    <div class="header-btns">
+      <button class="btn-consult">상담접수</button>
+      <button class="btn-console">관리콘솔 ▾</button>
+    </div>
+  </div>
+</header>
+
+<!-- SUBNAV -->
+<div class="subnav">
+  <div class="subnav-inner">
+    <a href="#">AI / GPU</a>
+    <a href="#">GPU 인프라</a>
+    <a href="#">GPU 서버</a>
+    <a href="#">GPU 랙</a>
+    <a href="#" class="active">Inference Package <span class="new-tag">NEW</span></a>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-deco">
+    <div class="hero-deco-inner">
+      <div class="hero-cube"></div><div class="hero-cube"></div><div class="hero-cube"></div>
+      <div class="hero-cube"></div><div class="hero-cube"></div><div class="hero-cube"></div>
+    </div>
+  </div>
+  <div class="hero-inner">
+    <div class="hero-update-tag">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v6M12 16v6M4.93 4.93l4.24 4.24M14.83 14.83l4.24 4.24M2 12h6M16 12h6M4.93 19.07l4.24-4.24M14.83 9.17l4.24-4.24"/></svg>
+      2026 전략 신상품 UPDATE
+    </div>
+    <h1>Inference Package</h1>
+    <p class="hero-sub">GPU · CPU 서버 · 트래픽을 하나의 패키지로.<br>LLaMA 3 70B 서빙부터 vLLM 멀티워커 96GB까지 SME AI 팀을 위한 6종.</p>
+    <button class="btn-hero">상담하기</button>
+
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-num">~18 tok/s</div>
+        <div class="hero-stat-label">LLaMA 3 70B Q4_K_M · RTX 6000 Ada</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">최대 96 GB</div>
+        <div class="hero-stat-label">VRAM · RTX 6000 Ada ×2 · Heavy Dual Pack</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">최대 4 TB</div>
+        <div class="hero-stat-label">월 무료 트래픽 포함 · Gen2 서버 기준</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE TABS -->
+<div class="pagetabs">
+  <div class="pagetabs-inner">
+    <a href="#" class="active">서비스</a>
+    <a href="#">소개</a>
+    <a href="#">특징</a>
+    <a href="#">사양</a>
+  </div>
+</div>
+
+<!-- BODY -->
+<div class="body-wrap">
+
+  <div class="sec-head">
+    <div class="sec-title">Inference Package 6종</div>
+    <div class="sec-sub">가비아 공식 GPU 서버 · Gen2 클라우드 서버 공시 요금 기준 (부가세 포함) · 옵션 재클릭 시 제외</div>
+  </div>
+
+  <!-- CTRL ROW -->
+  <div class="ctrl-row">
+    <div class="cat-tabs" id="catTabs">
+      <button class="cat-tab active" onclick="filterCards('all',this)">전체</button>
+      <button class="cat-tab" onclick="filterCards('internal',this)">사내 전용</button>
+      <button class="cat-tab" onclick="filterCards('external',this)">외부 서비스</button>
+      <button class="cat-tab" onclick="filterCards('llm',this)">LLM 서빙</button>
+    </div>
+    <div class="unit-row">
+      <span class="unit-label">요금 단위</span>
+      <div class="unit-tabs" id="globalUnit">
+        <button class="unit-tab active" onclick="setGlobalUnit('month',this)">/ 월</button>
+        <button class="unit-tab" onclick="setGlobalUnit('hour',this)">/ 시간</button>
+        <button class="unit-tab" onclick="setGlobalUnit('min',this)">/ 분</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ PACKAGE GRID ═══ -->
+  <div class="pkg-grid" id="pkgGrid">
+
+  <!-- ┌── CARD 1: Entry Pack ──┐ -->
+  <div class="pkg-card featured" data-cat="internal" id="card-entry">
+    <div class="card-hd">
+      <div class="card-badges">
+        <span class="badge badge-best">BEST</span>
+        <span class="badge badge-internal">사내 전용</span>
+        <span class="badge badge-credit">크레딧형</span>
+      </div>
+      <div class="card-title">Entry Pack</div>
+      <div class="card-sub">AI 첫 도입 · PoC · 경량 ML 실험</div>
+    </div>
+    <div class="spec-wrap">
+      <table class="spec-tbl">
+        <tr><td>GPU</td><td class="s-mono" id="sv-entry-gpu">RTX 4080 16GB</td></tr>
+        <tr><td>VRAM</td><td class="s-mono s-blue" id="sv-entry-vram">16 GB GDDR6X</td></tr>
+        <tr><td>CPU</td><td class="s-mono">Xeon Silver 4210R · 10C/20T · 2.4GHz</td></tr>
+        <tr><td>RAM</td><td class="s-mono" id="sv-entry-ram">DDR4 64GB RDIMM</td></tr>
+        <tr><td>DISK</td><td class="s-mono">480GB SSD + 4TB HDD</td></tr>
+        <tr><td>NET</td><td class="s-mono">10Mbps · IP 1개</td></tr>
+        <tr><td>트래픽</td><td class="s-mono" id="sv-entry-tr">1 TB 무료 포함</td></tr>
+      </table>
+    </div>
+    <div class="opt-wrap">
+      <div class="opt-group">
+        <div class="opt-lbl">GPU 모델 선택</div>
+        <div class="opt-btns" id="og-entry-gpu">
+          <button class="opt-btn selected star" data-pkg="entry" data-type="gpu" data-key="4080" data-price="407000" data-vram="16 GB GDDR6X" data-gspec="RTX 4080 16GB" data-ram="DDR4 64GB RDIMM" data-gpucnt="1">RTX 4080 · 16GB</button>
+          <button class="opt-btn" data-pkg="entry" data-type="gpu" data-key="a5000" data-price="363000" data-vram="24 GB GDDR6 ECC" data-gspec="RTX A5000 24GB" data-ram="DDR4 32GB REG-ECC" data-gpucnt="1">RTX A5000 · 24GB</button>
+          <button class="opt-btn" data-pkg="entry" data-type="gpu" data-key="4000ada" data-price="319000" data-vram="20 GB GDDR6 ECC" data-gspec="RTX 4000 Ada 20GB" data-ram="DDR4 32GB" data-gpucnt="1">RTX 4000 Ada · 20GB</button>
+        </div>
+      </div>
+      <div class="opt-group">
+        <div class="opt-lbl">CPU 서버</div>
+        <div class="opt-btns" id="og-entry-cpu">
+          <button class="opt-btn selected star" data-pkg="entry" data-type="cpu" data-key="incl" data-price="0" data-cspec="GPU 서버 내장 (기본)">GPU 서버 내장</button>
+        </div>
+      </div>
+      <div class="opt-group">
+        <div class="opt-lbl">트래픽</div>
+        <div class="opt-btns" id="og-entry-tr">
+          <button class="opt-btn selected star" data-pkg="entry" data-type="tr" data-key="1tb" data-price="0" data-tspec="1 TB 무료 포함">1TB 포함</button>
+          <button class="opt-btn" data-pkg="entry" data-type="tr" data-key="none" data-price="0" data-tspec="사내전용 (불필요)">사내전용 불필요</button>
+        </div>
+      </div>
+    </div>
+    <div class="price-wrap">
+      <div class="price-unit-tabs">
+        <button class="p-utab active" onclick="setCardUnit('entry','month',this)">/ 월</button>
+        <button class="p-utab" onclick="setCardUnit('entry','hour',this)">/ 시간</button>
+        <button class="p-utab" onclick="setCardUnit('entry','min',this)">/ 분</button>
+      </div>
+      <div class="price-main">
+        <span class="price-num" id="pf-entry">407,000</span>
+        <span class="price-unit" id="pu-entry">&thinsp;원/월</span>
+      </div>
+      <div class="price-breakdown" id="pb-entry">GPU 407,000원</div>
+      <div class="price-orig" id="po-entry">정가 561,000원/월 (무약정 이벤트가)</div>
+      <div class="price-disc" id="pd-entry">▼ 28% 할인 적용</div>
+      <div class="traffic-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
+        <span id="tt-entry">무료 트래픽 1TB 포함</span>
+      </div>
+    </div>
+    <button class="btn-apply">상담하기</button>
+  </div>
+
+  <!-- ┌── CARD 2: Batch Pack ──┐ -->
+  <div class="pkg-card" data-cat="internal" id="card-batch">
+    <div class="card-hd">
+      <div class="card-badges">
+        <span class="badge badge-internal">사내 전용</span>
+        <span class="badge badge-credit">크레딧형</span>
+      </div>
+      <div class="card-title">Batch Pack</div>
+      <div class="card-sub">야간 배치 · 수요예측 · 이상탐지 · 주기 실행</div>
+    </div>
+    <div class="spec-wrap">
+      <table class="spec-tbl">
+        <tr><td>GPU</td><td class="s-mono" id="sv-batch-gpu">RTX 4000 Ada 20GB</td></tr>
+        <tr><td>VRAM</td><td class="s-mono s-blue" id="sv-batch-vram">20 GB GDDR6 ECC</td></tr>
+        <tr><td>CPU</td><td class="s-mono">Xeon Silver 4210R · 10C/20T · 2.4GHz</td></tr>
+        <tr><td>RAM</td><td class="s-mono" id="sv-batch-ram">DDR4 32GB</td></tr>
+        <tr><td>DISK</td><td class="s-mono">480GB SSD + 4TB HDD</td></tr>
+        <tr><td>NET</td><td class="s-mono">10Mbps · IP 1개</td></tr>
+        <tr><td>CPU서버</td><td class="s-mono" id="sv-batch-cpu">—</td></tr>
+        <tr><td>트래픽</td><td class="s-mono" id="sv-batch-tr">1 TB 무료 포함</td></tr>
+      </table>
+    </div>
+    <div class="opt-wrap">
+      <div class="opt-group">
+        <div class="opt-lbl">GPU 모델 선택</div>
+        <div class="opt-btns" id="og-batch-gpu">
+          <button class="opt-btn selected star" data-pkg="batch" data-type="gpu" data-key="4000ada" data-price="319000" data-vram="20 GB GDDR6 ECC" data-gspec="RTX 4000 Ada 20GB" data-ram="DDR4 32GB" data-gpucnt="1">RTX 4000 Ada · 20GB</button>
+          <button class="opt-btn" data-pkg="batch" data-type="gpu" data-key="4090" data-price="550000" data-vram="24 GB GDDR6X" data-gspec="RTX 4090 24GB" data-ram="DDR4 64GB RDIMM" data-gpucnt="1">RTX 4090 · 24GB</button>
+        </div>
+      </div>
+      <div class="opt-group">
+        <div class="opt-lbl">CPU 서버 (Gen2 · 전처리 추가)</div>
+        <div class="opt-btns" id="og-batch-cpu">
+          <button class="opt-btn selected star" data-pkg="batch" data-type="cpu" data-key="none" data-price="0" data-cspec="—">불필요 (기본)</button>
+          <button class="opt-btn" data-pkg="batch" data-type="cpu" data-key="std2c" data-price="75350" data-cspec="Standard 2vCore/8GB">Standard 2vC/8GB</button>
+          <button class="opt-btn" data-pkg="batch" data-type="cpu" data-key="std4c" data-price="150700" data-cspec="Standard 4vCore/16GB">Standard 4vC/16GB</button>
+        </div>
+      </div>
+      <div class="opt-group">
+        <div class="opt-lbl">트래픽</div>
+        <div class="opt-btns" id="og-batch-tr">
+          <button class="opt-btn selected star" data-pkg="batch" data-type="tr" data-key="1tb" data-price="0" data-tspec="1 TB 무료 포함">1TB 포함</button>
+          <button class="opt-btn" data-pkg="batch" data-type="tr" data-key="none" data-price="0" data-tspec="사내전용 불필요">불필요</button>
+        </div>
+      </div>
+    </div>
+    <div class="price-wrap">
+      <div class="price-unit-tabs">
+        <button class="p-utab active" onclick="setCardUnit('batch','month',this)">/ 월</button>
+        <button class="p-utab" onclick="setCardUnit('batch','hour',this)">/ 시간</button>
+        <button class="p-utab" onclick="setCardUnit('batch','min',this)">/ 분</button>
+      </div>
+      <div class="price-main">
+        <span class="price-num" id="pf-batch">319,000</span>
+        <span class="price-unit" id="pu-batch">&thinsp;원/월</span>
+      </div>
+      <div class="price-breakdown" id="pb-batch">GPU 319,000원</div>
+      <div class="price-orig" id="po-batch">정가 473,000원/월</div>
+      <div class="price-disc" id="pd-batch">▼ 33% 할인 적용</div>
+      <div class="traffic-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
+        <span id="tt-batch">무료 트래픽 1TB 포함</span>
+      </div>
+    </div>
+    <button class="btn-apply">상담하기</button>
+  </div>
+
+  <!-- ┌── CARD 3: API Serve Pack ──┐ -->
+  <div class="pkg-card featured" data-cat="external" id="card-api">
+    <div class="card-hd">
+      <div class="card-badges">
+        <span class="badge badge-best">BEST</span>
+        <span class="badge badge-external">외부 서비스</span>
+      </div>
+      <div class="card-title">API Serve Pack</div>
+      <div class="card-sub">24시간 외부 API · 챗봇 · 추천엔진 · OCR · 이미지 분류</div>
+    </div>
+    <div class="spec-wrap">
+      <table class="spec-tbl">
+        <tr><td>GPU</td><td class="s-mono" id="sv-api-gpu">RTX 5000 Ada 32GB</td></tr>
+        <tr><td>VRAM</td><td class="s-mono s-blue" id="sv-api-vram">32 GB GDDR6 ECC</td></tr>
+        <tr><td>CPU</td><td class="s-mono" id="sv-api-cpuspec">Xeon Silver 4210R · 10C/20T · 2.4GHz</td></tr>
+        <tr><td>RAM</td><td class="s-mono" id="sv-api-ram">DDR4 64GB</td></tr>
+        <tr><td>DISK</td><td class="s-mono">480GB SSD + 4TB HDD</td></tr>
+        <tr><td>NET</td><td class="s-mono">10Mbps · IP 1개</td></tr>
+        <tr><td>API 서버</td><td class="s-mono" id="sv-api-cpu">Standard 4vCore/16GB</td></tr>
+        <tr><td>트래픽</td><td class="s-mono" id="sv-api-tr">1 TB 무료 포함</td></tr>
+      </table>
+    </div>
+    <div class="opt-wrap">
+      <div class="opt-group">
+        <div class="opt-lbl">GPU 모델 선택</div>
+        <div class="opt-btns" id="og-api-gpu">
+          <button class="opt-btn selected star" data-pkg="api" data-type="gpu" data-key="5000ada_1" data-price="451000" data-vram="32 GB GDDR6 ECC" data-gspec="RTX 5000 Ada 32GB" data-ram="DDR4 64GB" data-gpucnt="1">RTX 5000 Ada · 32GB</button>
+          <button class="opt-btn" data-pkg="api" data-type="gpu" data-key="5000ada_2" data-price="836000" data-vram="64 GB GDDR6 ECC (×2)" data-gspec="RTX 5000 Ada 32GB ×2" data-ram="DDR4 128GB" data-gpucnt="2">RTX 5000 Ada ×2 · 64GB</button>
+          <button class="opt-btn" data-pkg="api" data-type="gpu" data-key="a6000_1" data-price="572000" data-vram="48 GB GDDR6 ECC" data-gspec="RTX A6000 48GB" data-ram="DDR4 64GB REG-ECC" data-gpucnt="1">RTX A6000 · 48GB</button>
+        </div>
+      </div>
+      <div class="opt-group">
+        <div class="opt-lbl">API 서버 (Gen2 · 게이트웨이)</div>
+        <div class="opt-btns" id="og-api-cpu">
+          <button class="opt-btn selected star" data-pkg="api" data-type="cpu" data-key="std4c" data-price="150700" data-cspec="Standard 4vCore/16GB">Standard 4vC/16GB</button>
+          <button class="opt-btn" data-pkg="api" data-type="cpu" data-key="std8c" data-price="301400" data-cspec="Standard 8vCore/32GB">Standard 8vC/32GB</button>
+          <button class="opt-btn" data-pkg="api" data-type="cpu" data-key="hcpu4c" data-price="121000" data-cspec="High CPU 4vCore/8GB">High CPU 4vC/8GB</button>
+        </div>
+      </div>
+      <div class="opt-group">
+        <div class="opt-lbl">트래픽 플랜 (110원/GB 초과)</div>
+        <div class="opt-btns" id="og-api-tr">
+          <button class="opt-btn selected star" data-pkg="api" data-type="tr" data-key="1tb" data-price="0" data-tspec="1 TB 무료 포함">1TB 기본</button>
+          <button class="opt-btn" data-pkg="api" data-type="tr" data-key="3tb" data-price="220000" data-tspec="+2TB 추가 (220,000원)">+2TB</button>
+          <button class="opt-btn" data-pkg="api" data-type="tr" data-key="8tb" data-price="660000" data-tspec="+7TB 슬라이딩">+7TB (슬라이딩)</button>
+        </div>
+      </div>
+    </div>
+    <div class="price-wrap">
+      <div class="price-unit-tabs">
+        <button class="p-utab active" onclick="setCardUnit('api','month',this)">/ 월</button>
+        <button class="p-utab" onclick="setCardUnit('api','hour',this)">/ 시간</button>
+        <button class="p-utab" onclick="setCardUnit('api','min',this)">/ 분</button>
+      </div>
+      <div class="price-main">
+        <span class="price-num" id="pf-api">601,700</span>
+        <span class="price-unit" id="pu-api">&thinsp;원/월</span>
+      </div>
+      <div class="price-breakdown" id="pb-api">GPU 451,000 + API서버 150,700원</div>
+      <div class="price-orig" id="po-api">GPU 정가 737,000원/월</div>
+      <div class="price-disc" id="pd-api">▼ 39% 할인 + Gen2 번들</div>
+      <div class="traffic-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
+        <span id="tt-api">무료 트래픽 1TB 포함</span>
+      </div>
+    </div>
+    <button class="btn-apply">상담하기</button>
+  </div>
+
+  <!-- ┌── CARD 4: LLM 70B Pack ──┐ -->
+  <div class="pkg-card featured" data-cat="llm external" id="card-llm">
+    <div class="card-hd">
+      <div class="card-badges">
+        <span class="badge badge-new">NEW</span>
+        <span class="badge badge-external">사내 / 외부</span>
+      </div>
+      <div class="card-title">LLM 70B Pack</div>
+      <div class="card-sub">LLaMA 3 70B · EXAONE · Mistral · 사내 LLM API</div>
+    </div>
+    <div class="spec-wrap">
+      <table class="spec-tbl">
+        <tr><td>GPU</td><td class="s-mono" id="sv-llm-gpu">RTX 6000 Ada 48GB</td></tr>
+        <tr><td>VRAM</td><td class="s-mono s-blue" id="sv-llm-vram">48 GB GDDR6 ECC</td></tr>
+        <tr><td>CPU</td><td class="s-mono" id="sv-llm-cpuspec">Xeon Silver 4210R · 10C/20T · 2.4GHz</td></tr>
+        <tr><td>RAM</td><td class="s-mono" id="sv-llm-ram">DDR4 64GB</td></tr>
+        <tr><td>DISK</td><td class="s-mono">480GB SSD + 4TB HDD</td></tr>
+        <tr><td>NET</td><td class="s-mono">10Mbps · IP 1개</td></tr>
+        <tr><td>추론</td><td class="s-mono s-green">~18 tok/s (70B Q4_K_M)</td></tr>
+        <tr><td>RAG서버</td><td class="s-mono" id="sv-llm-cpu">Standard 8vCore/32GB</td></tr>
+        <tr><td>트래픽</td><td class="s-mono" id="sv-llm-tr">1 TB 무료 포함</td></tr>
+      </table>
+    </div>
+    <div class="opt-wrap">
+      <div class="opt-group">
+        <div class="opt-lbl">GPU 모델 선택</div>
+        <div class="opt-btns" id="og-llm-gpu">
+          <button class="opt-btn selected star" data-pkg="llm" data-type="gpu" data-key="6000ada_1" data-price="704000" data-vram="48 GB GDDR6 ECC" data-gspec="RTX 6000 Ada 48GB" data-ram="DDR4 64GB" data-gpucnt="1">RTX 6000 Ada · 48GB</button>
+          <button class="opt-btn" data-pkg="llm" data-type="gpu" data-key="a6000_1" data-price="572000" data-vram="48 GB GDDR6 ECC" data-gspec="RTX A6000 48GB" data-ram="DDR4 64GB REG-ECC" data-gpucnt="1">RTX A6000 · 48GB</button>
+        </div>
+      </div>
+      <div class="opt-group">
+        <div class="opt-lbl">RAG · 프롬프트 서버 (Gen2)</div>
+        <div class="opt-btns" id="og-llm-cpu">
+          <button class="opt-btn selected star" data-pkg="llm" data-type="cpu" data-key="std8c" data-price="301400" data-cspec="Standard 8vCore/32GB">Standard 8vC/32GB</button>
+          <button class="opt-btn" data-pkg="llm" data-type="cpu" data-key="std4c" data-price="150700" data-cspec="Standard 4vCore/16GB">Standard 4vC/16GB</button>
+          <button class="opt-btn" data-pkg="llm" data-type="cpu" data-key="hm4c" data-price="198000" data-cspec="High Memory 4vCore/32GB">High Mem 4vC/32GB</button>
+        </div>
+      </div>
+      <div class="opt-group">
+        <div class="opt-lbl">트래픽 플랜</div>
+        <div class="opt-btns" id="og-llm-tr">
+          <button class="opt-btn selected star" data-pkg="llm" data-type="tr" data-key="1tb" data-price="0" data-tspec="1 TB 무료 포함">1TB 사내</button>
+          <button class="opt-btn" data-pkg="llm" data-type="tr" data-key="3tb" data-price="220000" data-tspec="+2TB 외부 API">+2TB 외부</button>
+        </div>
+      </div>
+    </div>
+    <div class="price-wrap">
+      <div class="price-unit-tabs">
+        <button class="p-utab active" onclick="setCardUnit('llm','month',this)">/ 월</button>
+        <button class="p-utab" onclick="setCardUnit('llm','hour',this)">/ 시간</button>
+        <button class="p-utab" onclick="setCardUnit('llm','min',this)">/ 분</button>
+      </div>
+      <div class="price-main">
+        <span class="price-num" id="pf-llm">1,005,400</span>
+        <span class="price-unit" id="pu-llm">&thinsp;원/월</span>
+      </div>
+      <div class="price-breakdown" id="pb-llm">GPU 704,000 + RAG서버 301,400원</div>
+      <div class="price-orig" id="po-llm">GPU 정가 1,243,000원/월</div>
+      <div class="price-disc" id="pd-llm">▼ 43% 할인 + Gen2 번들</div>
+      <div class="traffic-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
+        <span id="tt-llm">무료 트래픽 1TB · ~18 tok/s LLaMA 3 70B</span>
+      </div>
+    </div>
+    <button class="btn-apply">상담하기</button>
+  </div>
+
+  <!-- ┌── CARD 5: Team Pool Pack ──┐ -->
+  <div class="pkg-card" data-cat="internal" id="card-team">
+    <div class="card-hd">
+      <div class="card-badges">
+        <span class="badge badge-internal">사내 전용</span>
+        <span class="badge badge-credit">크레딧형</span>
+      </div>
+      <div class="card-title">Team Pool Pack</div>
+      <div class="card-sub">멀티 프로젝트 · 크레딧 공유 · 유휴 자동 반납</div>
+    </div>
+    <div class="spec-wrap">
+      <table class="spec-tbl">
+        <tr><td>GPU</td><td class="s-mono" id="sv-team-gpu">RTX A6000 48GB</td></tr>
+        <tr><td>VRAM</td><td class="s-mono s-blue" id="sv-team-vram">48 GB GDDR6 ECC</td></tr>
+        <tr><td>CPU</td><td class="s-mono">Xeon Silver 4210R · 10C/20T · 2.4GHz</td></tr>
+        <tr><td>RAM</td><td class="s-mono" id="sv-team-ram">DDR4 64GB REG-ECC</td></tr>
+        <tr><td>DISK</td><td class="s-mono">480GB SSD + 4TB HDD</td></tr>
+        <tr><td>NET</td><td class="s-mono">10Mbps · IP 1개</td></tr>
+        <tr><td>크레딧</td><td class="s-mono s-blue" id="sv-team-cr">300h/월 (Growth)</td></tr>
+        <tr><td>개발서버</td><td class="s-mono" id="sv-team-cpu">High CPU 4vCore/8GB</td></tr>
+        <tr><td>트래픽</td><td class="s-mono" id="sv-team-tr">1 TB 무료 포함</td></tr>
+      </table>
+    </div>
+    <div class="opt-wrap">
+      <div class="opt-group">
+        <div class="opt-lbl">크레딧 플랜 (RTX A6000 48GB · 1,433원/h)</div>
+        <div class="opt-btns" id="og-team-gpu">
+          <button class="opt-btn" data-pkg="team" data-type="gpu" data-key="s200" data-price="286600" data-vram="48 GB GDDR6 ECC" data-gspec="RTX A6000 (Starter 200h)" data-ram="DDR4 64GB REG-ECC" data-gpucnt="1" data-cr="200h/월 (Starter)">Starter · 200h</button>
+          <button class="opt-btn selected star" data-pkg="team" data-type="gpu" data-key="g300" data-price="429900" data-vram="48 GB GDDR6 ECC" data-gspec="RTX A6000 (Growth 300h)" data-ram="DDR4 64GB REG-ECC" data-gpucnt="1" data-cr="300h/월 (Growth)">Growth · 300h</button>
+          <button class="opt-btn" data-pkg="team" data-type="gpu" data-key="sc600" data-price="859800" data-vram="48 GB GDDR6 ECC" data-gspec="RTX A6000 (Scale 600h)" data-ram="DDR4 64GB REG-ECC" data-gpucnt="1" data-cr="600h/월 (Scale)">Scale · 600h</button>
+        </div>
+      </div>
+      <div class="opt-group">
+        <div class="opt-lbl">공용 개발 서버 (Gen2)</div>
+        <div class="opt-btns" id="og-team-cpu">
+          <button class="opt-btn selected star" data-pkg="team" data-type="cpu" data-key="hcpu4c" data-price="121000" data-cspec="High CPU 4vCore/8GB">High CPU 4vC/8GB</button>
+          <button class="opt-btn" data-pkg="team" data-type="cpu" data-key="hcpu8c" data-price="242000" data-cspec="High CPU 8vCore/16GB">High CPU 8vC/16GB</button>
+          <button class="opt-btn" data-pkg="team" data-type="cpu" data-key="std4c" data-price="150700" data-cspec="Standard 4vCore/16GB">Standard 4vC/16GB</button>
+        </div>
+      </div>
+      <div class="opt-group">
+        <div class="opt-lbl">트래픽</div>
+        <div class="opt-btns" id="og-team-tr">
+          <button class="opt-btn selected star" data-pkg="team" data-type="tr" data-key="1tb" data-price="0" data-tspec="1 TB 무료 포함">1TB 포함</button>
+          <button class="opt-btn" data-pkg="team" data-type="tr" data-key="2tb" data-price="110000" data-tspec="+1TB (110,000원)">+1TB</button>
+        </div>
+      </div>
+    </div>
+    <div class="price-wrap">
+      <div class="price-unit-tabs">
+        <button class="p-utab active" onclick="setCardUnit('team','month',this)">/ 월</button>
+        <button class="p-utab" onclick="setCardUnit('team','hour',this)">/ 시간</button>
+        <button class="p-utab" onclick="setCardUnit('team','min',this)">/ 분</button>
+      </div>
+      <div class="price-main">
+        <span class="price-num" id="pf-team">550,900</span>
+        <span class="price-unit" id="pu-team">&thinsp;원/월</span>
+      </div>
+      <div class="price-breakdown" id="pb-team">크레딧 429,900 + 서버 121,000원</div>
+      <div class="price-orig" id="po-team">A6000 572,000원/월 × 개별 임대 대비</div>
+      <div class="price-disc" id="pd-team">팀 Pooling · 미사용 30% 익월 이월</div>
+      <div class="traffic-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
+        <span id="tt-team">유휴 자동 반납 · 30% 이월 · 1,433원/h</span>
+      </div>
+    </div>
+    <button class="btn-apply">상담하기</button>
+  </div>
+
+  <!-- ┌── CARD 6: Heavy Dual Pack ──┐ -->
+  <div class="pkg-card" data-cat="llm external" id="card-heavy">
+    <div class="card-hd">
+      <div class="card-badges">
+        <span class="badge badge-new">NEW</span>
+        <span class="badge badge-external">외부 서비스</span>
+      </div>
+      <div class="card-title">Heavy Dual Pack</div>
+      <div class="card-sub">96GB VRAM · vLLM 멀티워커 · 70B FP16 · 대형 멀티모달</div>
+    </div>
+    <div class="spec-wrap">
+      <table class="spec-tbl">
+        <tr><td>GPU</td><td class="s-mono" id="sv-heavy-gpu">RTX 6000 Ada 48GB ×2</td></tr>
+        <tr><td>VRAM</td><td class="s-mono s-blue" id="sv-heavy-vram">96 GB GDDR6 ECC (48×2)</td></tr>
+        <tr><td>CPU</td><td class="s-mono" id="sv-heavy-cpuspec">Xeon Silver 4210R · 10C/20T ×2EA</td></tr>
+        <tr><td>RAM</td><td class="s-mono" id="sv-heavy-ram">DDR4 192GB</td></tr>
+        <tr><td>DISK</td><td class="s-mono">480GB SSD + 4TB HDD</td></tr>
+        <tr><td>NET</td><td class="s-mono">10Mbps · IP 1개</td></tr>
+        <tr><td>vLLM서버</td><td class="s-mono" id="sv-heavy-cpu">Standard 16vCore/64GB</td></tr>
+        <tr><td>트래픽</td><td class="s-mono" id="sv-heavy-tr">1 TB 무료 포함</td></tr>
+      </table>
+    </div>
+    <div class="opt-wrap">
+      <div class="opt-group">
+        <div class="opt-lbl">GPU 모델 (2GPU 서버)</div>
+        <div class="opt-btns" id="og-heavy-gpu">
+          <button class="opt-btn selected star" data-pkg="heavy" data-type="gpu" data-key="6000ada_2" data-price="1221000" data-vram="96 GB GDDR6 ECC (48×2)" data-gspec="RTX 6000 Ada 48GB ×2" data-ram="DDR4 192GB" data-gpucnt="2">RTX 6000 Ada ×2 · 96GB</button>
+          <button class="opt-btn" data-pkg="heavy" data-type="gpu" data-key="a6000_2" data-price="946000" data-vram="96 GB GDDR6 ECC (48×2)" data-gspec="RTX A6000 48GB ×2" data-ram="DDR4 192GB REG-ECC" data-gpucnt="2">RTX A6000 ×2 · 96GB</button>
+        </div>
+      </div>
+      <div class="opt-group">
+        <div class="opt-lbl">vLLM 오케스트레이션 (Gen2)</div>
+        <div class="opt-btns" id="og-heavy-cpu">
+          <button class="opt-btn selected star" data-pkg="heavy" data-type="cpu" data-key="std16c" data-price="602800" data-cspec="Standard 16vCore/64GB">Standard 16vC/64GB</button>
+          <button class="opt-btn" data-pkg="heavy" data-type="cpu" data-key="std8c" data-price="301400" data-cspec="Standard 8vCore/32GB">Standard 8vC/32GB</button>
+          <button class="opt-btn" data-pkg="heavy" data-type="cpu" data-key="hm8c" data-price="396000" data-cspec="High Memory 8vCore/64GB">High Mem 8vC/64GB</button>
+        </div>
+      </div>
+      <div class="opt-group">
+        <div class="opt-lbl">트래픽 플랜</div>
+        <div class="opt-btns" id="og-heavy-tr">
+          <button class="opt-btn selected star" data-pkg="heavy" data-type="tr" data-key="1tb" data-price="0" data-tspec="1 TB 무료 포함">1TB 기본</button>
+          <button class="opt-btn" data-pkg="heavy" data-type="tr" data-key="5tb" data-price="440000" data-tspec="+4TB (440,000원)">+4TB</button>
+          <button class="opt-btn" data-pkg="heavy" data-type="tr" data-key="10tb" data-price="935000" data-tspec="+9TB 슬라이딩">+9TB (슬라이딩)</button>
+        </div>
+      </div>
+    </div>
+    <div class="price-wrap">
+      <div class="price-unit-tabs">
+        <button class="p-utab active" onclick="setCardUnit('heavy','month',this)">/ 월</button>
+        <button class="p-utab" onclick="setCardUnit('heavy','hour',this)">/ 시간</button>
+        <button class="p-utab" onclick="setCardUnit('heavy','min',this)">/ 분</button>
+      </div>
+      <div class="price-main">
+        <span class="price-num" id="pf-heavy">1,823,800</span>
+        <span class="price-unit" id="pu-heavy">&thinsp;원/월</span>
+      </div>
+      <div class="price-breakdown" id="pb-heavy">GPU 1,221,000 + vLLM서버 602,800원</div>
+      <div class="price-orig" id="po-heavy">GPU 정가 2,189,000원/월</div>
+      <div class="price-disc" id="pd-heavy">▼ 44% 할인 + Gen2 번들</div>
+      <div class="traffic-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
+        <span id="tt-heavy">무료 트래픽 1TB · 70B FP16 vLLM 서빙 가능</span>
+      </div>
+    </div>
+    <button class="btn-apply">상담하기</button>
+  </div>
+
+  </div><!-- /pkg-grid -->
+
+  <!-- FOOTNOTES -->
+  <div class="footnotes" style="margin-top:14px;">
+    <div class="fn">GPU 서버: 가비아 IDC 무약정 이벤트가 (부가세 포함) / 약정형 별도 문의</div>
+    <div class="fn">Gen2 서버: Standard 2vC/8GB 75,350원 · 4vC/16GB 150,700원 · 8vC/32GB 301,400원 · 16vC/64GB 602,800원 / High CPU 4vC/8GB 121,000원 · 8vC/16GB 242,000원 / High Mem 4vC/32GB 198,000원 · 8vC/64GB 396,000원</div>
+    <div class="fn">트래픽 초과: 0~5TB 110원/GB · 5~10TB 99원/GB · 10~30TB 88원/GB · 30TB~ 77원/GB</div>
+    <div class="fn">크레딧 단가: A6000 572,000원/월 ÷ 730h = 783원/h 기준 · Starter 200h=156,600원 / Growth 300h=234,900원 / Scale 600h=469,800원 (크레딧 단독, 서버 별도)</div>
+  </div>
+
+  <div class="sec-div"></div>
+
+  <!-- GPU SPEC TABLE -->
+  <div class="sec-head">
+    <div class="sec-title">GPU 아키텍처 기술 스펙</div>
+    <div class="sec-sub">NVIDIA 공식 스펙 기준 · 가비아 IDC 제공 라인업</div>
+  </div>
+  <div class="gpu-spec-wrap">
+    <table class="gpu-spec-tbl">
+      <thead>
+        <tr>
+          <th>GPU 모델</th>
+          <th>Architecture</th>
+          <th>VRAM</th>
+          <th>CUDA Cores</th>
+          <th>Tensor Cores</th>
+          <th>RT Cores</th>
+          <th>Interface</th>
+          <th>TDP</th>
+          <th>70B Q4 LLM</th>
+          <th>70B FP16 LLM</th>
+          <th>가비아 월요금</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>RTX 4080</td>
+          <td><span class="gs-arch">Ada Lovelace</span></td>
+          <td class="gs-mono">16 GB GDDR6X</td>
+          <td class="gs-mono">9,728</td>
+          <td class="gs-mono">304 (4th)</td>
+          <td class="gs-mono">76</td>
+          <td class="gs-mono">PCIe 4.0 ×16</td>
+          <td class="gs-mono">450 W</td>
+          <td class="gs-bad">OOM</td>
+          <td class="gs-bad">OOM</td>
+          <td class="gs-mono">407,000원</td>
+        </tr>
+        <tr>
+          <td>RTX 4000 Ada</td>
+          <td><span class="gs-arch">Ada Lovelace</span></td>
+          <td class="gs-mono">20 GB GDDR6 ECC</td>
+          <td class="gs-mono">6,144</td>
+          <td class="gs-mono">192 (4th)</td>
+          <td class="gs-mono">48</td>
+          <td class="gs-mono">PCIe 4.0 ×16</td>
+          <td class="gs-mono">130 W</td>
+          <td class="gs-bad">OOM</td>
+          <td class="gs-bad">OOM</td>
+          <td class="gs-mono">319,000원</td>
+        </tr>
+        <tr>
+          <td>RTX A5000</td>
+          <td><span class="gs-arch">Ampere</span></td>
+          <td class="gs-mono">24 GB GDDR6 ECC</td>
+          <td class="gs-mono">8,192</td>
+          <td class="gs-mono">256 (3rd)</td>
+          <td class="gs-mono">64</td>
+          <td class="gs-mono">PCIe 4.0 ×16</td>
+          <td class="gs-mono">230 W</td>
+          <td class="gs-bad">OOM</td>
+          <td class="gs-bad">OOM</td>
+          <td class="gs-mono">363,000원</td>
+        </tr>
+        <tr>
+          <td>RTX 4090</td>
+          <td><span class="gs-arch">Ada Lovelace</span></td>
+          <td class="gs-mono">24 GB GDDR6X</td>
+          <td class="gs-mono">16,384</td>
+          <td class="gs-mono">512 (4th)</td>
+          <td class="gs-mono">128</td>
+          <td class="gs-mono">PCIe 4.0 ×16</td>
+          <td class="gs-mono">450 W</td>
+          <td class="gs-bad">OOM</td>
+          <td class="gs-bad">OOM</td>
+          <td class="gs-mono">550,000원</td>
+        </tr>
+        <tr>
+          <td>RTX 5000 Ada</td>
+          <td><span class="gs-arch">Ada Lovelace</span></td>
+          <td class="gs-mono">32 GB GDDR6 ECC</td>
+          <td class="gs-mono">12,800</td>
+          <td class="gs-mono">400 (4th)</td>
+          <td class="gs-mono">100</td>
+          <td class="gs-mono">PCIe 4.0 ×16</td>
+          <td class="gs-mono">250 W</td>
+          <td class="gs-warn">Q4_K_S 한계</td>
+          <td class="gs-bad">OOM</td>
+          <td class="gs-mono">451,000원</td>
+        </tr>
+        <tr>
+          <td>RTX A6000</td>
+          <td><span class="gs-arch">Ampere</span></td>
+          <td class="gs-mono">48 GB GDDR6 ECC</td>
+          <td class="gs-mono">10,752</td>
+          <td class="gs-mono">336 (3rd)</td>
+          <td class="gs-mono">84</td>
+          <td class="gs-mono">PCIe 4.0 ×16</td>
+          <td class="gs-mono">300 W</td>
+          <td class="gs-ok">✓ ~15 tok/s</td>
+          <td class="gs-bad">OOM</td>
+          <td class="gs-mono">572,000원</td>
+        </tr>
+        <tr style="background:#f0f6ff;">
+          <td style="color:var(--blue);font-weight:700;">RTX 6000 Ada ★</td>
+          <td><span class="gs-arch" style="border-color:var(--blue);color:var(--blue);">Ada Lovelace</span></td>
+          <td class="gs-mono" style="color:var(--blue);font-weight:700;">48 GB GDDR6 ECC</td>
+          <td class="gs-mono" style="font-weight:700;">18,176</td>
+          <td class="gs-mono" style="font-weight:700;">568 (4th)</td>
+          <td class="gs-mono">112</td>
+          <td class="gs-mono">PCIe 4.0 ×16</td>
+          <td class="gs-mono">300 W</td>
+          <td class="gs-ok">✓ ~18 tok/s</td>
+          <td class="gs-warn">OOM (96GB 필요)</td>
+          <td class="gs-mono" style="font-weight:700;">704,000원</td>
+        </tr>
+        <tr style="background:#fff8f0;">
+          <td style="color:#b45309;font-weight:700;">RTX 6000 Ada ×2</td>
+          <td><span class="gs-arch">Ada Lovelace ×2</span></td>
+          <td class="gs-mono" style="color:#b45309;font-weight:700;">96 GB GDDR6 ECC</td>
+          <td class="gs-mono">36,352</td>
+          <td class="gs-mono">1,136</td>
+          <td class="gs-mono">224</td>
+          <td class="gs-mono">PCIe 4.0 ×16 ×2</td>
+          <td class="gs-mono">600 W</td>
+          <td class="gs-ok">✓ ~36 tok/s</td>
+          <td class="gs-ok">✓ 70B FP16 가능</td>
+          <td class="gs-mono" style="font-weight:700;">1,221,000원</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="footnotes" style="margin-top:12px;">
+    <div class="fn">CUDA/Tensor/RT 코어 수: NVIDIA 공식 데이터시트 기준</div>
+    <div class="fn">70B LLM 추론 속도: Ollama/vLLM Q4_K_M 기준 추정치 · 실제 환경 및 설정에 따라 상이</div>
+    <div class="fn">×2 GPU 성능은 이론적 2배 기준 · NVLink 미지원 PCIe 구성이므로 실제 멀티GPU 효율 고려 필요</div>
+  </div>
+
+  <div class="sec-div"></div>
+
+  <!-- COMPARE TABLE -->
+  <div class="sec-head">
+    <div class="sec-title">6종 패키지 한눈에 비교</div>
+    <div class="sec-sub">가비아 공식 공시 요금 기준 · GPU 무약정 이벤트가 + Gen2 클라우드 서버 공시가</div>
+  </div>
+  <div class="cmp-wrap">
+    <table class="cmp-tbl">
+      <thead>
+        <tr>
+          <th>패키지</th>
+          <th>타겟 워크로드</th>
+          <th>GPU (VRAM)</th>
+          <th>동반 CPU 서버</th>
+          <th>과금 방식</th>
+          <th>무료 트래픽</th>
+          <th>운영 유형</th>
+          <th>추천 구성 월 요금</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Entry Pack</td>
+          <td class="cm">AI 첫 도입 · PoC · 경량 ML</td>
+          <td class="cm">RTX 4080 (16 GB)</td>
+          <td class="cm">GPU 서버 내장</td>
+          <td><span class="c-credit">크레딧</span></td>
+          <td class="cm">1 TB</td>
+          <td><span class="ct-int">사내</span></td>
+          <td class="ch">407,000원</td>
+        </tr>
+        <tr>
+          <td>Batch Pack</td>
+          <td class="cm">야간 배치 · 수요예측 · 이상탐지</td>
+          <td class="cm">RTX 4000 Ada (20 GB)</td>
+          <td class="cm">옵션 선택</td>
+          <td><span class="c-credit">크레딧</span></td>
+          <td class="cm">1 TB</td>
+          <td><span class="ct-int">사내</span></td>
+          <td class="ch">319,000원~</td>
+        </tr>
+        <tr>
+          <td>API Serve Pack</td>
+          <td class="cm">24h API · 챗봇 · 추천엔진</td>
+          <td class="cm">RTX 5000 Ada (32 GB)</td>
+          <td class="cm">Standard 4vC/16GB</td>
+          <td class="cm">월정액</td>
+          <td class="cm">1 TB~</td>
+          <td><span class="ct-ext">외부</span></td>
+          <td class="ch">601,700원</td>
+        </tr>
+        <tr>
+          <td>LLM 70B Pack</td>
+          <td class="cm">LLaMA 3 70B · 사내 LLM API</td>
+          <td style="font-family:var(--mono);font-size:12.5px;font-weight:700;color:var(--blue)">RTX 6000 Ada (48 GB)</td>
+          <td class="cm">Standard 8vC/32GB</td>
+          <td class="cm">월정액</td>
+          <td class="cm">1 TB~</td>
+          <td><span class="ct-both">사내/외부</span></td>
+          <td class="ch">1,005,400원</td>
+        </tr>
+        <tr>
+          <td>Team Pool Pack</td>
+          <td class="cm">멀티 프로젝트 · 공유 크레딧</td>
+          <td class="cm">RTX A6000 (48 GB)</td>
+          <td class="cm">High CPU 4vC/8GB</td>
+          <td><span class="c-credit">크레딧 Pooling</span></td>
+          <td class="cm">1 TB</td>
+          <td><span class="ct-int">사내</span></td>
+          <td class="ch">550,900원~</td>
+        </tr>
+        <tr>
+          <td>Heavy Dual Pack</td>
+          <td class="cm">vLLM 멀티워커 · 70B FP16</td>
+          <td style="font-family:var(--mono);font-size:12.5px;font-weight:700;color:var(--blue)">RTX 6000 Ada ×2 (96 GB)</td>
+          <td class="cm">Standard 16vC/64GB</td>
+          <td class="cm">월정액</td>
+          <td class="cm">1 TB~</td>
+          <td><span class="ct-ext">외부</span></td>
+          <td class="ch">1,823,800원</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="footnotes" style="margin-top:12px;">
+    <div class="fn">GPU 서버 28~44% 할인: 가비아 IDC 무약정 이벤트가 기준 (약정형 별도)</div>
+    <div class="fn">Gen2 클라우드 서버는 별도 계정에서 시간 단위 과금 후 합산 청구</div>
+    <div class="fn">크레딧 환산: A6000 572,000원/730h = 783원/h / 47원/분</div>
+  </div>
+
+</div><!-- /body-wrap -->
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <a href="#">이용약관</a>
+      <a href="#">개인정보처리방침</a>
+      <a href="#">고객센터</a>
+      <span>© 2026 Gabia Inc. · 본 페이지는 전략 기획안 시뮬레이션입니다.</span>
+    </div>
+    <span>☎ 02-3473-3911</span>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════
+   JAVASCRIPT
+═══════════════════════════════════════════ -->
+<script>
+/* ── STATE ─────────────────────────── */
+const S = {
+  entry: { gpu:407000,  cpu:0,      tr:0, unit:'month' },
+  batch: { gpu:319000,  cpu:0,      tr:0, unit:'month' },
+  api:   { gpu:451000,  cpu:150700, tr:0, unit:'month' },
+  llm:   { gpu:704000,  cpu:301400, tr:0, unit:'month' },
+  team:  { gpu:429900,  cpu:121000, tr:0, unit:'month' },
+  heavy: { gpu:1221000, cpu:602800, tr:0, unit:'month' },
+};
+
+const HOURS = 730;   // 월 730시간
+const MINS  = 43800; // 월 43,800분
+
+function totalMonth(pkg) {
+  const s = S[pkg]; return (s.gpu||0)+(s.cpu||0)+(s.tr||0);
+}
+function fmt(n, unit) {
+  if (unit === 'month') return n.toLocaleString('ko-KR');
+  if (unit === 'hour')  return Math.round(n / HOURS).toLocaleString('ko-KR');
+  if (unit === 'min')   return (n / MINS).toFixed(1);
+}
+function sfx(unit) {
+  return { month:'원/월', hour:'원/시간', min:'원/분' }[unit];
+}
+
+function renderPrice(pkg) {
+  const m = totalMonth(pkg), u = S[pkg].unit;
+  document.getElementById('pf-'+pkg).textContent = fmt(m, u);
+  document.getElementById('pu-'+pkg).textContent = '\u2009' + sfx(u);
+  const s = S[pkg], parts = [];
+  if (s.gpu) parts.push('GPU ' + s.gpu.toLocaleString('ko-KR') + '원');
+  if (s.cpu) parts.push('서버 ' + s.cpu.toLocaleString('ko-KR') + '원');
+  if (s.tr)  parts.push('트래픽 +' + s.tr.toLocaleString('ko-KR') + '원');
+  document.getElementById('pb-'+pkg).textContent = parts.join(' + ') || '—';
+}
+
+/* ── PER-CARD UNIT ──────────────────── */
+function setCardUnit(pkg, unit, btn) {
+  S[pkg].unit = unit;
+  btn.parentElement.querySelectorAll('.p-utab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderPrice(pkg);
+}
+
+/* ── GLOBAL UNIT ────────────────────── */
+function setGlobalUnit(unit, btn) {
+  document.querySelectorAll('#globalUnit .unit-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const LABEL = {month:'/ 월', hour:'/ 시간', min:'/ 분'};
+  ['entry','batch','api','llm','team','heavy'].forEach(pkg=>{
+    S[pkg].unit = unit;
+    const card = document.getElementById('card-'+pkg);
+    if(!card) return;
+    card.querySelectorAll('.p-utab').forEach(b=>{
+      b.classList.toggle('active', b.textContent.trim() === LABEL[unit]);
+    });
+    renderPrice(pkg);
+  });
+}
+
+/* ── OPTION BUTTONS ─────────────────── */
+document.querySelectorAll('.opt-btn[data-pkg]').forEach(btn=>{
+  btn.addEventListener('click', function(){
+    const pkg  = this.dataset.pkg;
+    const type = this.dataset.type;
+    const price = parseInt(this.dataset.price)||0;
+    const grp = this.parentElement;
+    const wasSelected = this.classList.contains('selected');
+
+    if(type==='gpu'){
+      /* GPU: 필수, deselect 불가 */
+      grp.querySelectorAll('.opt-btn').forEach(b=>b.classList.remove('selected','excluded'));
+      this.classList.add('selected');
+      S[pkg].gpu = price;
+
+      /* spec 동기화 */
+      const sg = document.getElementById('sv-'+pkg+'-gpu');
+      const sv = document.getElementById('sv-'+pkg+'-vram');
+      const sr = document.getElementById('sv-'+pkg+'-ram');
+      const sc = document.getElementById('sv-'+pkg+'-cr');
+      if(sg) sg.textContent = this.dataset.gspec||'';
+      if(sv) sv.textContent = this.dataset.vram||'';
+      if(sr) sr.textContent = this.dataset.ram||'';
+      if(sc) sc.textContent = this.dataset.cr||'';
+
+      /* 2GPU 서버 → CPU ×2 표기 */
+      const cpuEl = document.getElementById('sv-'+pkg+'-cpuspec');
+      if(cpuEl){
+        const cnt = parseInt(this.dataset.gpucnt)||1;
+        const base = 'Xeon Silver 4210R · 10C/20T · 2.4GHz';
+        cpuEl.textContent = cnt===2 ? base+' ×2EA' : base;
+      }
+
+    } else {
+      /* CPU / tr: toggle 가능 */
+      grp.querySelectorAll('.opt-btn').forEach(b=>b.classList.remove('selected','excluded'));
+      if(wasSelected){
+        this.classList.add('excluded');
+        S[pkg][type] = 0;
+        if(type==='cpu'){
+          const el = document.getElementById('sv-'+pkg+'-cpu');
+          if(el) el.textContent = '—';
+        }
+        if(type==='tr'){
+          const el = document.getElementById('sv-'+pkg+'-tr');
+          if(el) el.textContent = '트래픽 미포함';
+          const tt = document.getElementById('tt-'+pkg);
+          if(tt) tt.textContent = '트래픽 별도';
+        }
+      } else {
+        this.classList.add('selected');
+        S[pkg][type] = price;
+        if(type==='cpu'){
+          const el = document.getElementById('sv-'+pkg+'-cpu');
+          if(el) el.textContent = this.dataset.cspec||'';
+        }
+        if(type==='tr'){
+          const el = document.getElementById('sv-'+pkg+'-tr');
+          if(el) el.textContent = this.dataset.tspec||'';
+          const tt = document.getElementById('tt-'+pkg);
+          if(tt) tt.textContent = '무료 트래픽 '+(this.dataset.tspec||'');
+        }
+      }
+    }
+    renderPrice(pkg);
+  });
+});
+
+/* ── FILTER ─────────────────────────── */
+function filterCards(cat, btn){
+  document.querySelectorAll('#catTabs .cat-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.pkg-card').forEach(card=>{
+    if(cat==='all'){ card.style.display=''; return; }
+    card.style.display = (card.dataset.cat||'').includes(cat) ? '' : 'none';
+  });
+}
+</script>
+</body>
+</html>
