@@ -1485,6 +1485,116 @@ function filterCards(cat, btn){
     card.style.display = (card.dataset.cat||'').includes(cat) ? '' : 'none';
   });
 }
+
+/* ═════════════════════════════════════
+   MOBILE RESPONSIVE
+═════════════════════════════════════ */
+
+/* Tablet */
+@media (max-width:1100px){
+
+  .pkg-grid{
+    grid-template-columns: repeat(2,1fr);
+  }
+
+  .hero-stats{
+    position:static;
+    flex-direction:row;
+    margin-top:20px;
+  }
+
+  .hero{
+    padding-bottom:30px;
+  }
+
+}
+
+/* Mobile */
+@media (max-width:768px){
+
+  .gnb{
+    display:none;
+  }
+
+  .header-inner{
+    justify-content:space-between;
+  }
+
+  .pkg-grid{
+    grid-template-columns:1fr;
+  }
+
+  .hero h1{
+    font-size:22px;
+  }
+
+  .hero-sub{
+    font-size:13px;
+  }
+
+  .hero-deco{
+    display:none;
+  }
+
+  .hero-stats{
+    flex-direction:column;
+    position:static;
+    margin-top:20px;
+  }
+
+  .hero-stat{
+    width:100%;
+  }
+
+  .cat-tabs{
+    overflow-x:auto;
+    white-space:nowrap;
+  }
+
+  .cat-tab{
+    flex:0 0 auto;
+  }
+
+  .pagetabs-inner{
+    overflow-x:auto;
+  }
+
+}
+
+/* Small Mobile */
+@media (max-width:480px){
+
+  .body-wrap{
+    padding:24px 16px 60px;
+  }
+
+  .header-inner{
+    padding:0 16px;
+  }
+
+  .subnav-inner{
+    padding:0 16px;
+  }
+
+  .hero{
+    padding:32px 16px;
+  }
+
+  .card-hd{
+    padding:14px;
+  }
+
+  .spec-wrap,
+  .opt-wrap,
+  .price-wrap{
+    padding:12px 14px;
+  }
+
+  .price-num{
+    font-size:24px;
+  }
+
+}
 </script>
 </body>
 </html>
